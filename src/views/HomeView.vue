@@ -1,24 +1,18 @@
 <template>
-  <main class="main">
-    <button>button 1</button>
-    <button>button 2</button>
-    <select name="tests" id="test1-select">
-      <option value="">--Please choose an option--</option>
-      <option value="test1">test1</option>
-    </select>
-    <select name="tests" id="test2-select">
-      <option value="">--Please choose an option--</option>
-      <option value="test1">test1</option>
-    </select>
-  </main>
+  <div class="home">
+    <img alt="Vue logo" src="../assets/logo.png">
+    <HelloWorld msg="Welcome to Your Vue.js + TypeScript App"/>
+  </div>
 </template>
 
-<script setup></script>
+<script lang="ts">
+import { defineComponent } from 'vue';
+import HelloWorld from '@/components/HelloWorld.vue'; // @ is an alias to /src
 
-<style scoped>
-.main {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-</style>
+export default defineComponent({
+  name: 'HomeView',
+  components: {
+    HelloWorld,
+  },
+});
+</script>
