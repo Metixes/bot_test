@@ -1,17 +1,18 @@
 <template>
   <div class="coins">
+    <h3>Parsing Status: {{ status }}</h3>
     <div class="coins-options">
       <Dropdown
         v-model="selectedCoin"
         :options="allCoins"
         optionLabel="name"
-        placeholder="Select a Coin"
+        placeholder="All Coin"
         @change="($event) => addOrRemoveCoin($event.value, 'all')" />
       <Dropdown
         v-model="selectedUserCoin"
         :options="userCoins"
         optionLabel="name"
-        placeholder="Select a Coin"
+        placeholder="My Coin"
         @change="($event) => addOrRemoveCoin($event.value, 'my')" />
     </div>
     <div class="coins-btns">
@@ -34,6 +35,7 @@ import Dropdown from "primevue/dropdown";
 import Toast from "primevue/toast";
 import axios from "axios";
 
+const status = ref<Boolean | undefined>(false);
 const allCoins: Coin[] = reactive([]);
 const userCoins: Coin[] = reactive([]);
 const selectedCoin = ref<string>("");
@@ -61,7 +63,7 @@ const getAllCoins = async (): Promise<void> => {
 
     allCoins.push(...data.symbols);
   } catch (error) {
-    console.log("error");
+    console.log(error);
     toast.add({
       severity: "error",
       detail: "Something is wrone, try later",
@@ -69,6 +71,7 @@ const getAllCoins = async (): Promise<void> => {
     });
   }
 };
+
 const getUserCoins = async (): Promise<void> => {
   try {
     const { data } = await axios.get(
@@ -179,6 +182,7 @@ const startStopParsing = async (command: string): Promise<void> => {
       return;
     }
 
+    status.value = data.info.status;
     toast.add({
       severity: "success",
       detail: "Ok",
@@ -194,20 +198,52 @@ const startStopParsing = async (command: string): Promise<void> => {
   }
 };
 
+const getStatus = async (): Promise<void> => {
+  try {
+    const { data } = await axios.get(
+      process.env.VUE_APP_API_ROUTE + "management/status",
+      {
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (data.error) {
+      toast.add({
+        severity: "error",
+        detail: data.error.message,
+        life: 3000,
+      });
+      return;
+    }
+
+    status.value = data.status.status;
+  } catch (error) {
+    console.log("error");
+    toast.add({
+      severity: "error",
+      detail: "Something is wrone, try later",
+      life: 3000,
+    });
+  }
+};
+
 onMounted((): void => {
-  // getAllCoins();
-  // getUserCoins();
+  getAllCoins();
+  getUserCoins();
+  getStatus();
 });
 </script>
 
 <style scoped lang="scss">
 .coins {
+  padding: 0 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 40px;
-
   transform: translateY(100%);
 
   &-options {
