@@ -244,7 +244,6 @@ onMounted((): void => {
   align-items: center;
   justify-content: center;
   gap: 40px;
-  transform: translateY(50%);
 
   &-options {
     display: flex;
